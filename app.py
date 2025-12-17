@@ -170,6 +170,6 @@ elif task == "Population Growth Percentage":
 # ---------------- FOOTER ----------------
 st.markdown("---")
 st.markdown(
-    "<center>Charts dynamically linked to global Year Group filters</center>",
+    "<center>Beginner-Friendly Pandas + Streamlit Project </center>",
     unsafe_allow_html=True
 )
