@@ -26,7 +26,7 @@ st.sidebar.title("🔎 Global Filters")
 # Category filter (derived from Residents)
 df["Category"] = (
     df["Residents"]
-    .str.replace("Male", "", case=False)
+    .str.replace("Male", "", case=True)
     .str.replace("Female", "", case=False)
 )
 
