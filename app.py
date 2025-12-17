@@ -106,6 +106,48 @@ elif task == "Population Growth Percentage":
     result = total_pop[["Year", "Count", "Population_Growth_%"]]
 
     st.dataframe(result, use_container_width=True)
+# Filters
+st.subheader("Filters")
+
+category_list = sorted(gender_ratio["Category"].unique())
+selected_category = st.selectbox(
+    "Select Category",
+    ["All"] + category_list
+)
+
+if selected_category != "All":
+    gender_ratio = gender_ratio[
+        gender_ratio["Category"] == selected_category
+    ]
+
+year_groups = sorted(gender_ratio["Year_Group"].unique())
+selected_years = st.multiselect(
+    "Select Year Group (3-Year Window)",
+    year_groups,
+    default=year_groups
+)
+
+gender_ratio = gender_ratio[
+    gender_ratio["Year_Group"].isin(selected_years)
+]
+
+sort_column = st.selectbox(
+    "Sort By",
+    ["Year_Group", "Female_to_Male_Ratio", "Female", "Male"]
+)
+
+sort_order = st.radio(
+    "Sort Order",
+    ["Ascending", "Descending"],
+    horizontal=True
+)
+
+gender_ratio = gender_ratio.sort_values(
+    by=sort_column,
+    ascending=(sort_order == "Ascending")
+)
+
+st.dataframe(gender_ratio, use_container_width=True)
 
 # ---------------- FOOTER ----------------
 st.markdown("---")
