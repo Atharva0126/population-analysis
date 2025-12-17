@@ -1,1 +1,32 @@
+/* Main background */
+.stApp {
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    color: white;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* Sidebar */
+section[data-testid="stSidebar"] {
+    background-color: #111827;
+}
+
+/* Headings */
+h1, h2, h3 {
+    color: #38bdf8;
+}
+
+/* DataFrame */
+[data-testid="stDataFrame"] {
+    background-color: white;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+/* Buttons */
+.stButton>button {
+    background-color: #38bdf8;
+    color: black;
+    border-radius: 8px;
+    font-weight: bold;
+}
 
