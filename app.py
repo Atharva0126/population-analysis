@@ -17,6 +17,7 @@ def load_data():
     return pd.read_csv("data/Singapore_Residents_edit.csv")
 
 df = load_data()
+df["Year_Group"] = (df["Year"] // 3) * 3
 
 # ---------------- SIDEBAR ----------------
 st.sidebar.title("📊 Analysis Options")
@@ -57,8 +58,8 @@ elif task == "Total Population Every Year":
 elif task == "Male–Female Ratio (Every 3 Years)":
     st.subheader("Male–Female Ratio (Every 3 Years)")
 
-    male_df = df[df["Residents"].str.contains("Male", case=False)]
-    female_df = df[df["Residents"].str.contains("Female", case=False)]
+    male_df = df[df["Residents"].str.contains("Male", case=False, na=False)]
+    female_df = df[df["Residents"].str.contains("Female", case=False, na=False)]
 
     male_df["Category"] = male_df["Residents"].str.replace("Male", "", case=False)
     female_df["Category"] = female_df["Residents"].str.replace("Female", "", case=False)
@@ -79,7 +80,7 @@ elif task == "Male–Female Ratio (Every 3 Years)":
 
     gender_ratio = pd.merge(
         male_count,
-        female_count,
+         female_count,
         on=["Category", "Year_Group"],
         how="inner"
     )
@@ -87,6 +88,7 @@ elif task == "Male–Female Ratio (Every 3 Years)":
     gender_ratio["Female_to_Male_Ratio"] = (
         gender_ratio["Female"] / gender_ratio["Male"]
     ).round(2)
+
 
     st.dataframe(gender_ratio, use_container_width=True)
 
