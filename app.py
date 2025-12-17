@@ -29,12 +29,7 @@ df["Category"] = (
 # ==================================================
 st.sidebar.title("🔎 Global Filters")
 
-category_list = sorted(df["Category"].dropna().unique())
-selected_category = st.sidebar.selectbox(
-    "Select Category",
-    ["All"] + category_list
-)
-
+# Year Group filter only
 year_groups = sorted(df["Year_Group"].unique())
 selected_year_groups = st.sidebar.multiselect(
     "Select Year Group (3-Year Window)",
@@ -44,10 +39,6 @@ selected_year_groups = st.sidebar.multiselect(
 
 # Apply filters once
 df_filtered = df.copy()
-
-if selected_category != "All":
-    df_filtered = df_filtered[df_filtered["Category"] == selected_category]
-
 df_filtered = df_filtered[
     df_filtered["Year_Group"].isin(selected_year_groups)
 ]
@@ -74,7 +65,7 @@ st.title("📈 Singapore Population Analysis")
 # TASK 0 : RAW DATA
 # ==================================================
 if task == "View Raw Data":
-    st.subheader("Raw Dataset (Filtered)")
+    st.subheader("Raw Dataset (Filtered by Year Group)")
     st.dataframe(df_filtered, use_container_width=True)
 
 # ==================================================
@@ -179,6 +170,6 @@ elif task == "Population Growth Percentage":
 # ---------------- FOOTER ----------------
 st.markdown("---")
 st.markdown(
-    "<center>Interactive Charts Linked to Global Filters</center>",
+    "<center>Charts dynamically linked to global Year Group filters</center>",
     unsafe_allow_html=True
 )
