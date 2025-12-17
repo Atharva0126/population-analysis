@@ -15,20 +15,19 @@ def load_data():
 
 df = load_data()
 
-# ---------------- CREATE YEAR GROUP ----------------
+# ---------------- CREATE DERIVED COLUMNS ----------------
 df["Year_Group"] = (df["Year"] // 3) * 3
+
+df["Category"] = (
+    df["Residents"]
+    .str.replace("Male", "", case=False)
+    .str.replace("Female", "", case=False)
+)
 
 # ==================================================
 # GLOBAL FILTERS (SIDEBAR)
 # ==================================================
 st.sidebar.title("🔎 Global Filters")
-
-# Category filter (derived from Residents)
-df["Category"] = (
-    df["Residents"]
-    .str.replace("Male", "", case=True)
-    .str.replace("Female", "", case=False)
-)
 
 category_list = sorted(df["Category"].dropna().unique())
 selected_category = st.sidebar.selectbox(
@@ -36,7 +35,6 @@ selected_category = st.sidebar.selectbox(
     ["All"] + category_list
 )
 
-# Year Group filter
 year_groups = sorted(df["Year_Group"].unique())
 selected_year_groups = st.sidebar.multiselect(
     "Select Year Group (3-Year Window)",
@@ -44,7 +42,7 @@ selected_year_groups = st.sidebar.multiselect(
     default=year_groups
 )
 
-# Apply filters ONCE
+# Apply filters once
 df_filtered = df.copy()
 
 if selected_category != "All":
@@ -73,14 +71,14 @@ task = st.sidebar.selectbox(
 st.title("📈 Singapore Population Analysis")
 
 # ==================================================
-# TASK 0 : VIEW RAW DATA
+# TASK 0 : RAW DATA
 # ==================================================
 if task == "View Raw Data":
     st.subheader("Raw Dataset (Filtered)")
     st.dataframe(df_filtered, use_container_width=True)
 
 # ==================================================
-# TASK 1 : TOTAL POPULATION EVERY YEAR
+# TASK 1 : TOTAL POPULATION + LINE CHART
 # ==================================================
 elif task == "Total Population Every Year":
     st.subheader("Total Population Every Year")
@@ -94,10 +92,19 @@ elif task == "Total Population Every Year":
         .reset_index()
     )
 
-    st.dataframe(result, use_container_width=True)
+    col1, col2 = st.columns([2, 3])
+
+    with col1:
+        st.dataframe(result, use_container_width=True)
+
+    with col2:
+        st.line_chart(
+            result.set_index("Year")["Count"],
+            height=350
+        )
 
 # ==================================================
-# TASK 2 : MALE–FEMALE RATIO
+# TASK 2 : MALE–FEMALE RATIO + BAR CHART
 # ==================================================
 elif task == "Male–Female Ratio (Every 3 Years)":
     st.subheader("Male–Female Ratio (Every 3 Years)")
@@ -130,10 +137,21 @@ elif task == "Male–Female Ratio (Every 3 Years)":
         gender_ratio["Female"] / gender_ratio["Male"]
     ).round(2)
 
-    st.dataframe(gender_ratio, use_container_width=True)
+    col1, col2 = st.columns([2, 3])
+
+    with col1:
+        st.dataframe(gender_ratio, use_container_width=True)
+
+    with col2:
+        chart_data = gender_ratio.pivot(
+            index="Year_Group",
+            columns="Category",
+            values="Female_to_Male_Ratio"
+        )
+        st.bar_chart(chart_data, height=350)
 
 # ==================================================
-# TASK 3 : POPULATION GROWTH
+# TASK 3 : POPULATION GROWTH + LINE CHART
 # ==================================================
 elif task == "Population Growth Percentage":
     st.subheader("Population Growth Percentage")
@@ -145,13 +163,22 @@ elif task == "Population Growth Percentage":
         total_pop["Count"].pct_change() * 100
     ).round(2)
 
-    result = total_pop[["Year", "Count", "Population_Growth_%"]]
+    result = total_pop[["Year", "Population_Growth_%"]]
 
-    st.dataframe(result, use_container_width=True)
+    col1, col2 = st.columns([2, 3])
+
+    with col1:
+        st.dataframe(result, use_container_width=True)
+
+    with col2:
+        st.line_chart(
+            result.set_index("Year"),
+            height=350
+        )
 
 # ---------------- FOOTER ----------------
 st.markdown("---")
 st.markdown(
-    "<center>Global Filters persist across all tasks</center>",
+    "<center>Interactive Charts Linked to Global Filters</center>",
     unsafe_allow_html=True
 )
